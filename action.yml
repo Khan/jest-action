@@ -1,0 +1,8 @@
+name: 'Flow Coverage Linter'
+description: 'Check to make sure all your code is really covered!'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: check-circle
+  color: red

@@ -54,12 +54,15 @@ const runArcanist = async (flowBin, files) => {
 
 const [_, __, flowBin, ...argvFiles] = process.argv;
 
-if (argvFiles.length) {
-    // arc lint is running us
-    runArcanist(flowBin, argvFiles);
-} else {
+if (flowBin) {
     // flow-next-uncovered-line
     run(flowBin).catch((err) => {
+        console.error(err); // flow-uncovered-line
+        process.exit(1);
+    });
+} else {
+    // arc lint is running us
+    run(process.env['INPUT_FLOW-BIN']).catch((err) => {
         console.error(err); // flow-uncovered-line
         process.exit(1);
     });
