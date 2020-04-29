@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 /* flow-uncovered-block */
+// TODO(jared): Strip this out somehow to make this lighter weight
 const highlight /*: (string, {language: string, ignoreIllegals: boolean}) => string */ = require('cli-highlight')
     .highlight;
 /* end flow-uncovered-block */
@@ -38,7 +39,7 @@ const localReport = async (title /*:string*/, messages /*:Array<Message>*/) => {
     console.log(chalk.yellow(`[[ ${title} ]]`));
     console.log();
     const fileCache /*: {[key: string]: Array<string>}*/ = {};
-    const getFile = filePath => {
+    const getFile = (filePath) => {
         if (!fileCache[filePath]) {
             const ext = path.extname(filePath).slice(1);
             fileCache[filePath] = highlight(fs.readFileSync(filePath, 'utf8'), {
@@ -49,7 +50,7 @@ const localReport = async (title /*:string*/, messages /*:Array<Message>*/) => {
         return fileCache[filePath];
     };
     const byFile /*:{[key: string]: number}*/ = {};
-    messages.forEach(message => {
+    messages.forEach((message) => {
         const lines = getFile(message.path);
         const lineStart = Math.max(message.start.line - 3, 0);
         const indexStart = lineStart + 1;
@@ -127,7 +128,7 @@ const githubReport = async (
         head_sha: headSha,
     });
     /* end flow-uncovered-block */
-    const annotations = messages.map(message => ({
+    const annotations = messages.map((message) => ({
         path: removeWorkspace(message.path),
         start_line: message.start.line,
         end_line: message.end.line,
@@ -136,7 +137,7 @@ const githubReport = async (
     }));
     let errorCount = 0;
     let warningCount = 0;
-    messages.forEach(message => {
+    messages.forEach((message) => {
         if (message.annotationLevel === 'failure') {
             errorCount += 1;
         } else {

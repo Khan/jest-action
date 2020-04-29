@@ -15,14 +15,11 @@
  */
 const execProm = require('./exec-prom');
 
-const getBaseRef = async (
-    head /*:string*/ = 'HEAD',
-    fromCli /*:boolean*/ = false,
-) => {
+const getBaseRef = async (head /*:string*/ = 'HEAD') => {
     if (process.env.GITHUB_BASE_REF) {
         return `refs/remotes/origin/${process.env.GITHUB_BASE_REF}`;
     } else {
-        let {stdout: upstream} = await execProm(
+        let { stdout: upstream } = await execProm(
             `git rev-parse --abbrev-ref '${head}@{upstream}'`,
         );
         upstream = upstream.trim();
@@ -31,44 +28,30 @@ const getBaseRef = async (
         if (upstream && !upstream.trim().startsWith('origin/')) {
             return `refs/heads/${upstream}`;
         }
-        let {stdout: headRef} = await execProm(
+        let { stdout: headRef } = await execProm(
             `git rev-parse --abbrev-ref ${head}`,
         );
         headRef = headRef.trim();
         for (let i = 1; i < 100; i++) {
-            const {stdout} = await execProm(
+            const { stdout } = await execProm(
                 `git branch --contains ${head}~${i} --format='%(refname)'`,
             );
             let lines = stdout.split('\n').filter(Boolean);
-            lines = lines.filter(line => line !== `refs/heads/${headRef}`);
+            lines = lines.filter((line) => line !== `refs/heads/${headRef}`);
 
-            if (!fromCli) {
-                // Note (Lilli): When running our actions locally, we want to be a little more
-                // aggressive in choosing a baseRef, going back to a shared commit on only `develop`,
-                // `master`, feature or release branches, so that we can cover more commits. In case,
-                // say, I create a bunch of experimental, first-attempt, throw-away branches that
-                // share commits higher in my stack...
-                for (const line of lines) {
-                    if (
-                        line === 'refs/heads/develop' ||
-                        line === 'refs/heads/master' ||
-                        line.startsWith('refs/heads/feature/') ||
-                        line.startsWith('refs/heads/release/')
-                    ) {
-                        return line;
-                    }
-                }
-            } else {
-                // Note (Lilli): But if we're running this through our CLI scripts, let's be a
-                // little smarter, since the user will have a change to edit our choice.
-
-                if (lines.length) {
-                    // If we've found _any_ other branch containing a shared commit, we'll return it.
-                    // If we've found more than one, pick the last one. Why the last one? Because
-                    // the array of branch names returned are alphabetical, and if we've found more
-                    // than one branch with a shared commit, I think it's more likely we'd want the
-                    // branch later in the alphabet. Mainly because "feature" is after "develop".
-                    return lines[lines.length - 1];
+            // Note (Lilli): When running our actions locally, we want to be a little more
+            // aggressive in choosing a baseRef, going back to a shared commit on only `develop`,
+            // `master`, feature or release branches, so that we can cover more commits. In case,
+            // say, I create a bunch of experimental, first-attempt, throw-away branches that
+            // share commits higher in my stack...
+            for (const line of lines) {
+                if (
+                    line === 'refs/heads/develop' ||
+                    line === 'refs/heads/master' ||
+                    line.startsWith('refs/heads/feature/') ||
+                    line.startsWith('refs/heads/release/')
+                ) {
+                    return line;
                 }
             }
         }

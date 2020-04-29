@@ -12,15 +12,15 @@
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
-const checkFile = require('../lib/flow-coverage-linter');
+const checkFile = require('./flow-coverage-linter');
 
-const sendReport = require('../lib/send-report');
-const getBaseRef = require('../lib/get-base-ref');
-const gitChangedFiles = require('../lib/git-changed-files');
+const sendReport = require('./send-report');
+const getBaseRef = require('./get-base-ref');
+const gitChangedFiles = require('./git-changed-files');
 
 async function run(flowBin) {
     const files = await gitChangedFiles(await getBaseRef(), '.');
-    const jsFiles = files.filter(file => file.endsWith('.js'));
+    const jsFiles = files.filter((file) => file.endsWith('.js'));
     if (!jsFiles.length) {
         console.log('No changed files');
         return;
@@ -44,7 +44,7 @@ const runArcanist = async (flowBin, files) => {
         }
         //failed = true;
 
-        warnings.forEach(warning => {
+        warnings.forEach((warning) => {
             console.log(
                 `${warning.path}:::${warning.message}:::${warning.offset}`,
             );
@@ -59,7 +59,7 @@ if (argvFiles.length) {
     runArcanist(flowBin, argvFiles);
 } else {
     // flow-next-uncovered-line
-    run(flowBin).catch(err => {
+    run(flowBin).catch((err) => {
         console.error(err); // flow-uncovered-line
         process.exit(1);
     });
