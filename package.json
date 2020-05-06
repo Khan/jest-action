@@ -6,7 +6,7 @@
     "author": "Jared Forsyth <jared@jaredforsyth.com>",
     "license": "MIT",
     "scripts": {
-        "dist": "ncc build flow-coverage.js"
+        "dist": "ncc build jest.js"
     },
     "dependencies": {
         "@actions/github": "^2.1.1",
