@@ -1,8 +1,12 @@
-name: 'Flow Coverage Linter'
-description: 'Check to make sure all your code is really covered!'
+name: 'Jest Action'
+description: 'Run jest and report the results inline'
 runs:
   using: 'node12'
   main: 'dist/index.js'
+inputs:
+  jest-bin:
+    required: true
+    description: 'Path to your jest library, probably node_modules/.bin/jest'
 branding:
   icon: check-circle
   color: red
