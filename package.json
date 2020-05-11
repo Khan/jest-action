@@ -13,10 +13,11 @@
         "@babel/core": "^7.9.6",
         "@babel/register": "^7.9.0",
         "@zeit/ncc": "^0.22.1",
+        "actions-utils": "Khan/actions-utils.git",
         "chalk": "^4.0.0",
         "cli-highlight": "^2.1.4",
         "flow-bin": "^0.123.0",
-        "metro-react-native-babel-preset": "^0.59.0",
-        "actions-utils": "Khan/actions-utils.git"
+        "jest": "^26.0.1",
+        "metro-react-native-babel-preset": "^0.59.0"
     }
 }
