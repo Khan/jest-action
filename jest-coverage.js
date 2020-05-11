@@ -6,7 +6,7 @@ require('@babel/register'); // flow-uncovered-line
 
 const path = require('path');
 const fs = require('fs');
-const sendReport = require('../lib/send-report');
+const sendReport = require('actions-utils/send-report');
 
 const coveragePragma = '\n// @coverage-lint';
 

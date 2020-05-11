@@ -15,8 +15,8 @@
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
-const sendReport = require('./send-report');
-const execProm = require('./exec-prom');
+const sendReport = require('actions-utils/send-report');
+const execProm = require('actions-utils/exec-prom');
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];

@@ -16,6 +16,7 @@
         "chalk": "^4.0.0",
         "cli-highlight": "^2.1.4",
         "flow-bin": "^0.123.0",
-        "metro-react-native-babel-preset": "^0.59.0"
+        "metro-react-native-babel-preset": "^0.59.0",
+        "actions-utils": "Khan/actions-utils.git"
     }
 }
