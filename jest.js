@@ -57,10 +57,7 @@ async function run() {
         let hadLocation = false;
         const path = testResult.name;
         for (const assertionResult of testResult.assertionResults) {
-            if (
-                assertionResult.status === 'failed' &&
-                assertionResult.location
-            ) {
+            if (assertionResult.status === 'failed' && assertionResult.location) {
                 hadLocation = true;
                 annotations.push({
                     path,
