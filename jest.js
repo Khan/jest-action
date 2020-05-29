@@ -12,6 +12,9 @@
  * UI).
  */
 
+let exampleGoodChange = "all good";
+console.log('Using the vbl', exampleGoodChange);
+
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
