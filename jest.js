@@ -12,13 +12,12 @@
  * UI).
  */
 
-
 require('@babel/register'); // flow-uncovered-line
 
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
 
-  const unused = 10;
+const unused = 10;
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
@@ -59,10 +58,7 @@ async function run() {
         let hadLocation = false;
         const path = testResult.name;
         for (const assertionResult of testResult.assertionResults) {
-            if (
-                assertionResult.status === 'failed' &&
-                assertionResult.location
-            ) {
+            if (assertionResult.status === 'failed' && assertionResult.location) {
                 hadLocation = true;
                 annotations.push({
                     path,
