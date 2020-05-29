@@ -46,7 +46,7 @@ async function run() {
     );
     /* end flow-uncovered-block */
     if (data.success) {
-        console.log('All tests passed');
+        await sendReport('Jest', annotations);
         return;
     }
     const annotations = [];
