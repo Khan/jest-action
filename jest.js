@@ -12,11 +12,13 @@
  * UI).
  */
 
-// $FlowFixMe: shhhhh
+
 require('@babel/register'); // flow-uncovered-line
 
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
+
+  const unused = 10;
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
@@ -87,6 +89,6 @@ async function run() {
 
 // flow-next-uncovered-line
 run().catch(err => {
-    console.error(err); // flow-uncovered-line
+    console.error(err);
     process.exit(1);
 });
