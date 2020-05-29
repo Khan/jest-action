@@ -46,7 +46,7 @@ async function run() {
     );
     /* end flow-uncovered-block */
     if (data.success) {
-        console.log('All tests passed');
+        await sendReport('Jest', []);
         return;
     }
     const annotations = [];
@@ -57,10 +57,7 @@ async function run() {
         let hadLocation = false;
         const path = testResult.name;
         for (const assertionResult of testResult.assertionResults) {
-            if (
-                assertionResult.status === 'failed' &&
-                assertionResult.location
-            ) {
+            if (assertionResult.status === 'failed' && assertionResult.location) {
                 hadLocation = true;
                 annotations.push({
                     path,
