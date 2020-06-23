@@ -28,6 +28,7 @@ async function run() {
         return;
     }
     const {stdout} = await execProm(`${jestBin} --json`);
+    console.log(stdout);
     /* flow-uncovered-block */
     const data /*:{
         testResults: Array<{
