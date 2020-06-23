@@ -27,8 +27,8 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout} = await execProm(`${jestBin} --json`);
-    console.error(`output ${stdout}`);
+    const {stdout, stderr} = await execProm(`${jestBin} --json`);
+    console.error(`output ${stdout}, ${stderr}`);
 
     let data = null;
 
