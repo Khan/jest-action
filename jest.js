@@ -28,9 +28,13 @@ async function run() {
         return;
     }
     const {stdout} = await execProm(`${jestBin} --json`);
-    console.error(stdout);
-    /* flow-uncovered-block */
-    const data /*:{
+    console.error(`output ${stdout}`);
+
+    let data = null;
+
+    try {
+        /* flow-uncovered-block */
+        data /*:{
         testResults: Array<{
             name: string,
             assertionResults: Array<{
@@ -43,8 +47,12 @@ async function run() {
         }>,
         success: bool,
     }*/ = JSON.parse(
-        stdout,
-    );
+            stdout,
+        );
+    } catch (e) {
+        console.error(`output ${stdout}`);
+        throw e;
+    }
     /* end flow-uncovered-block */
     if (data.success) {
         console.log('All tests passed');
