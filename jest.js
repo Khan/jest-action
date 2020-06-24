@@ -28,14 +28,14 @@ async function run() {
         return;
     }
     const {stdout, stderr} = await execProm(`${jestBin} --json`);
-    //
-    // if (stdout === null && stderr) {
-    //     console.error(`There was an error running jest:\n${stderr}`);
-    //     process.exit(1);
-    //     return;
-    // }
-    //
-    // console.log(`Parsing json output from jest...`);
+
+    if (stdout === null && stderr) {
+        console.error(`There was an error running jest:\n${stderr}`);
+        process.exit(1);
+        return;
+    }
+
+    console.log(`Parsing json output from jest...`);
 
     /* flow-uncovered-block */
     const data /*:{
