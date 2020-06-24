@@ -13,6 +13,8 @@
  */
 
 // $FlowFixMe: shhhhh
+import * as sys from './dist';
+
 require('@babel/register'); // flow-uncovered-line
 
 const sendReport = require('actions-utils/send-report');
@@ -27,6 +29,9 @@ async function run() {
         process.exit(1);
         return;
     }
+    sys.stderr.write('some data', () => {
+        console.log('The data has been flushed');
+    });
     const {stdout, stderr} = await execProm(`${jestBin} --json`);
     console.error(`output ${stdout}, ${stderr}`);
 
