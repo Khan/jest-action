@@ -13,7 +13,6 @@
  */
 
 // $FlowFixMe: shhhhh
-
 require('@babel/register'); // flow-uncovered-line
 
 const sendReport = require('actions-utils/send-report');
@@ -28,17 +27,18 @@ async function run() {
         process.exit(1);
         return;
     }
-    process.stderr.write('some data', () => {
-        console.log('The data has been flushed');
-    });
     const {stdout, stderr} = await execProm(`${jestBin} --json`);
-    console.error(`output ${stdout}, ${stderr}`);
 
-    let data = null;
+    if (!stdout && stderr) {
+        console.error(`There was an error running jest:\n${stderr}`);
+        process.exit(1);
+        return;
+    }
 
-    try {
-        /* flow-uncovered-block */
-        data /*:{
+    console.log(`Parsing json output from jest...`);
+
+    /* flow-uncovered-block */
+    const data /*:{
         testResults: Array<{
             name: string,
             assertionResults: Array<{
@@ -51,13 +51,10 @@ async function run() {
         }>,
         success: bool,
     }*/ = JSON.parse(
-            stdout,
-        );
-    } catch (e) {
-        console.error(`output ${stdout}`);
-        throw e;
-    }
+        stdout,
+    );
     /* end flow-uncovered-block */
+
     if (data.success) {
         console.log('All tests passed');
         return;
