@@ -27,7 +27,16 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout} = await execProm(`${jestBin} --json`);
+    const {stdout, stderr} = await execProm(`${jestBin} --json`);
+
+    if (stdout === null || stdout === '') {
+        console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
+        process.exit(1);
+        return;
+    }
+
+    console.log(`Parsing json output from jest...`);
+
     /* flow-uncovered-block */
     const data /*:{
         testResults: Array<{
@@ -45,6 +54,7 @@ async function run() {
         stdout,
     );
     /* end flow-uncovered-block */
+
     if (data.success) {
         await sendReport('Jest', []);
         return;
