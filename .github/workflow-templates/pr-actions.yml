@@ -18,7 +18,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run jest tests
-        uses: Khan/jest-action@WEB-2489
+        uses: Khan/jest-action@master
         setup: yarn
         with:
           jest-bin: ./node_modules/.bin/jest
