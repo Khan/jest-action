@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run jest coverage
-        uses: Khan/jest-coverage-action@master
+        uses: Khan/jest-coverage-action@WEB-2489
         setup: yarn
         with:
           jest-bin: ./node_modules/.bin/jest
