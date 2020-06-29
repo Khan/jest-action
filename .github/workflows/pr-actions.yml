@@ -18,13 +18,13 @@ jobs:
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       - name: Run jest tests
-        uses: Khan/jest-action@master
+        uses: Khan/jest-action@WEB-2489
         with:
           jest-bin: ./node_modules/.bin/jest
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       - name: Run jest coverage
-        uses: Khan/jest-coverage-action@WEB-2489
+        uses: Khan/jest-coverage-action@master
         with:
           jest-bin: ./node_modules/.bin/jest
           coverage-data-path: ./coverage/coverage-final.json
