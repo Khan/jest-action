@@ -27,7 +27,7 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout, stderr} = await execProm(`${jestBin} --json`);
+    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults`);
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
