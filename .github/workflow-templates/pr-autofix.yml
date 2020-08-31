@@ -19,7 +19,7 @@ jobs:
     ## Rebuild workflow file
     - name: Rebuild github actions workflow
       setup: yarn
-      paths: .github/workflow-templates/**
+      paths: '.github/workflow-templates/**'
       run: yarn make-workflows
 
     - name: Run prettier

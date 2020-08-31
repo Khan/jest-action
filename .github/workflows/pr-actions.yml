@@ -18,7 +18,7 @@ jobs:
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       - name: Run jest tests
-        uses: Khan/jest-action@temp
+        uses: Khan/jest-action@master
         with:
           jest-bin: ./node_modules/.bin/jest
         env:
