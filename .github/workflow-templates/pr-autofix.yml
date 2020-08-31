@@ -3,8 +3,7 @@ name: Autofixers
 # Our autofixers are all put together in a single job (called autofix), to
 # reduce churn
 
-on:
-  - push
+on: push
 
 include:
   # TODO: maybe something like:
