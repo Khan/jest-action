@@ -4,7 +4,7 @@ name: Autofixers
 # reduce churn
 
 on:
-  - pull_request
+  - push
 
 include:
   # TODO: maybe something like:
