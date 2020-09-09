@@ -18,7 +18,7 @@ jobs:
 
     steps:
     ## Rebuild workflow file
-    - name: Rebuild github actions workflow
+    - name: Rebuild github actions workflow templates
       setup: yarn
       paths: .github/workflow-templates/**
       run: yarn make-workflows
