@@ -20,6 +20,7 @@ const execProm = require('actions-utils/exec-prom');
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
+    const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     if (!jestBin) {
         console.error(
             `You need to have jest installed, and pass in the the jest binary via the variable 'jest-bin'.`,
@@ -89,7 +90,7 @@ async function run() {
             });
         }
     }
-    await sendReport('Jest', annotations);
+    await sendReport(`Jest${subtitle ? '- ' + subtitle : ''}`, annotations);
 }
 
 // flow-next-uncovered-line
