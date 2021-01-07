@@ -20,6 +20,7 @@ const execProm = require('actions-utils/exec-prom');
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
+    const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'];
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     if (!jestBin) {
         console.error(
@@ -28,7 +29,10 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults`);
+    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults`, {
+        rejectOnError: false,
+        cwd: workingDirectory || '.',
+    });
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
@@ -90,7 +94,7 @@ async function run() {
             });
         }
     }
-    await sendReport(`Jest${subtitle ? '- ' + subtitle : ''}`, annotations);
+    await sendReport(`Jest${subtitle ? ' - ' + subtitle : ''}`, annotations);
 }
 
 // flow-next-uncovered-line
