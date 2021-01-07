@@ -90,7 +90,7 @@ async function run() {
             });
         }
     }
-    await sendReport(`Jest${subtitle ? '- ' + subtitle : ''}`, annotations);
+    await sendReport(`Jest${subtitle ? ' - ' + subtitle : ''}`, annotations);
 }
 
 // flow-next-uncovered-line
