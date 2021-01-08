@@ -18,6 +18,19 @@ require('@babel/register'); // flow-uncovered-line
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
 
+const parseWithVerboseError = (text, stderr) => {
+    try {
+        return JSON.parse(text); // flow-uncovered-line
+        // flow-next-uncovered-line
+    } catch (err) {
+        console.error('>> ❌ Invalid Json! ❌ <<');
+        console.error('Jest probably had an error, or something is misconfigured');
+        console.error(stderr);
+        console.error(text);
+        throw err; // flow-uncovered-line
+    }
+};
+
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
     const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'];
@@ -55,8 +68,9 @@ async function run() {
             status: string,
         }>,
         success: bool,
-    }*/ = JSON.parse(
+    }*/ = parseWithVerboseError(
         stdout,
+        stderr,
     );
     /* end flow-uncovered-block */
 
