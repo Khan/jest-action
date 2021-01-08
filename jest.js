@@ -24,9 +24,7 @@ const parseWithVerboseError = (text, stderr) => {
         // flow-next-uncovered-line
     } catch (err) {
         console.error('>> ❌ Invalid Json! ❌ <<');
-        console.error(
-            'Jest probably had an error, or something is misconfigured',
-        );
+        console.error('Jest probably had an error, or something is misconfigured');
         console.error(stderr);
         console.error(text);
         throw err; // flow-uncovered-line
