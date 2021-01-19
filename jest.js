@@ -42,7 +42,7 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults`, {
+    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults --passWithNoTests`, {
         rejectOnError: false,
         cwd: workingDirectory || '.',
     });
