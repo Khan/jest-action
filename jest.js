@@ -42,10 +42,13 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout, stderr} = await execProm(`${jestBin} --json --testLocationInResults`, {
-        rejectOnError: false,
-        cwd: workingDirectory || '.',
-    });
+    const {stdout, stderr} = await execProm(
+        `${jestBin} --json --testLocationInResults --passWithNoTests`,
+        {
+            rejectOnError: false,
+            cwd: workingDirectory || '.',
+        },
+    );
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
