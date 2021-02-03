@@ -15,8 +15,11 @@
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
+const path = require('path');
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
+const gitChangedFiles = require('actions-utils/git-changed-files');
+const getBaseRef = require('actions-utils/get-base-ref');
 
 const parseWithVerboseError = (text, stderr) => {
     try {
@@ -42,8 +45,33 @@ async function run() {
         process.exit(1);
         return;
     }
+
+    const baseRef = getBaseRef();
+    if (!baseRef) {
+        console.error(`No base ref given`);
+        process.exit(1);
+        return;
+    }
+
+    const files = await gitChangedFiles(baseRef, workingDirectory || '.');
+    const validExt = ['js', 'jsx', 'mjs', 'ts', 'tsx'];
+    const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
+    if (!jsFiles.length) {
+        console.log('No JavaScript files changed');
+        return;
+    }
+
+    // Build the Jest command, including all the files that we want to test
+    const jestCmd = [
+        jestBin,
+        "--json",
+        "--testLocationInResults",
+        "--passWithNoTests",
+        "--findRelatedTests",
+    ].concat(jsFiles).join(" ");
+
     const {stdout, stderr} = await execProm(
-        `${jestBin} --json --testLocationInResults --passWithNoTests`,
+        jestCmd,
         {
             rejectOnError: false,
             cwd: workingDirectory || '.',
