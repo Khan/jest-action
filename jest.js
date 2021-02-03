@@ -64,19 +64,18 @@ async function run() {
     // Build the Jest command, including all the files that we want to test
     const jestCmd = [
         jestBin,
-        "--json",
-        "--testLocationInResults",
-        "--passWithNoTests",
-        "--findRelatedTests",
-    ].concat(jsFiles).join(" ");
+        '--json',
+        '--testLocationInResults',
+        '--passWithNoTests',
+        '--findRelatedTests',
+    ]
+        .concat(jsFiles)
+        .join(' ');
 
-    const {stdout, stderr} = await execProm(
-        jestCmd,
-        {
-            rejectOnError: false,
-            cwd: workingDirectory || '.',
-        },
-    );
+    const {stdout, stderr} = await execProm(jestCmd, {
+        rejectOnError: false,
+        cwd: workingDirectory || '.',
+    });
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
