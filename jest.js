@@ -15,8 +15,11 @@
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
+const path = require('path');
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
+const gitChangedFiles = require('actions-utils/git-changed-files');
+const getBaseRef = require('actions-utils/get-base-ref');
 
 const parseWithVerboseError = (text, stderr) => {
     try {
@@ -35,6 +38,7 @@ async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
     const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'];
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
+    const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
     if (!jestBin) {
         console.error(
             `You need to have jest installed, and pass in the the jest binary via the variable 'jest-bin'.`,
@@ -42,13 +46,35 @@ async function run() {
         process.exit(1);
         return;
     }
-    const {stdout, stderr} = await execProm(
-        `${jestBin} --json --testLocationInResults --passWithNoTests`,
-        {
-            rejectOnError: false,
-            cwd: workingDirectory || '.',
-        },
-    );
+
+    const baseRef = getBaseRef();
+    if (!baseRef) {
+        console.error(`No base ref given`);
+        process.exit(1);
+        return;
+    }
+
+    const files = await gitChangedFiles(baseRef, workingDirectory || '.');
+    const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
+    const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
+    if (!jsFiles.length) {
+        console.log('No JavaScript files changed');
+        return;
+    }
+
+    // Build the Jest command
+    const jestCmd = [jestBin, '--json', '--testLocationInResults', '--passWithNoTests'];
+
+    // If we only want related tests, then we explicitly specify that and
+    // include all of the files that are to be run.
+    if (findRelatedTests) {
+        jestCmd.push('--findRelatedTests', ...jsFiles);
+    }
+
+    const {stdout, stderr} = await execProm(jestCmd.join(' '), {
+        rejectOnError: false,
+        cwd: workingDirectory || '.',
+    });
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
