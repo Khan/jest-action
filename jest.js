@@ -63,26 +63,18 @@ async function run() {
     }
 
     // Build the Jest command
-    const jestCmd = [
-        jestBin,
-        "--json",
-        "--testLocationInResults",
-        "--passWithNoTests",
-    ];
+    const jestCmd = [jestBin, '--json', '--testLocationInResults', '--passWithNoTests'];
 
     // If we only want related tests, then we explicitly specify that and
     // include all of the files that are to be run.
     if (findRelatedTests) {
-        jestCmd.push("--findRelatedTests", ...jsFiles);
+        jestCmd.push('--findRelatedTests', ...jsFiles);
     }
 
-    const {stdout, stderr} = await execProm(
-        jestCmd.join(" "),
-        {
-            rejectOnError: false,
-            cwd: workingDirectory || '.',
-        },
-    );
+    const {stdout, stderr} = await execProm(jestCmd.join(' '), {
+        rejectOnError: false,
+        cwd: workingDirectory || '.',
+    });
 
     if (stdout === null || stdout === '') {
         console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
