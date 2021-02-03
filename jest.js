@@ -38,6 +38,7 @@ async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
     const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'];
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
+    const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
     if (!jestBin) {
         console.error(
             `You need to have jest installed, and pass in the the jest binary via the variable 'jest-bin'.`,
@@ -61,17 +62,22 @@ async function run() {
         return;
     }
 
-    // Build the Jest command, including all the files that we want to test
+    // Build the Jest command
     const jestCmd = [
         jestBin,
         "--json",
         "--testLocationInResults",
         "--passWithNoTests",
-        "--findRelatedTests",
-    ].concat(jsFiles).join(" ");
+    ];
+
+    // If we only want related tests, then we explicitly specify that and
+    // include all of the files that are to be run.
+    if (findRelatedTests) {
+        jestCmd.push("--findRelatedTests", ...jsFiles);
+    }
 
     const {stdout, stderr} = await execProm(
-        jestCmd,
+        jestCmd.join(" "),
         {
             rejectOnError: false,
             cwd: workingDirectory || '.',
