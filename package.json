@@ -33,6 +33,7 @@
     },
     "dependencies": {
         "@actions/core": "^1.2.7",
-        "jest": "^26.0.1"
+        "jest": "^26.0.1",
+        "tmp": "^0.2.1"
     }
 }

@@ -14,12 +14,14 @@
 // $FlowFixMe: shhhhh
 require('@babel/register'); // flow-uncovered-line
 
+const fs = require('fs');
 const path = require('path');
 const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
 const gitChangedFiles = require('actions-utils/git-changed-files');
 const getBaseRef = require('actions-utils/get-base-ref');
-const core = require("@actions/core"); // flow-uncovered-line
+const core = require('@actions/core'); // flow-uncovered-line
+const tmp = require('tmp'); // flow-uncovered-line
 
 const parseWithVerboseError = (text, stderr) => {
     try {
@@ -72,8 +74,16 @@ async function run() {
     core.endGroup();
     /* end flow-uncovered-block */
 
+    const tmpObj = tmp.fileSync();
+
     // Build the Jest command
-    const jestCmd = [jestBin, '--json', '--testLocationInResults', '--passWithNoTests'];
+    const jestCmd = [
+        jestBin,
+        '--json',
+        `--outputFile=${tmpObj.name}`,
+        '--testLocationInResults',
+        '--passWithNoTests',
+    ];
 
     // If we only want related tests, then we explicitly specify that and
     // include all of the files that are to be run.
@@ -92,7 +102,14 @@ async function run() {
         return;
     }
 
+    // TODO: stream output from jest
+    core.group("Jest output");
+    core.info(stdout);
+    core.endGroup();
+
     console.log(`Parsing json output from jest...`);
+
+    const output = fs.readFileSync(tmpObj.name, "utf-8");
 
     /* flow-uncovered-block */
     const data /*:{
@@ -108,7 +125,7 @@ async function run() {
         }>,
         success: bool,
     }*/ = parseWithVerboseError(
-        stdout,
+        output,
         stderr,
     );
     /* end flow-uncovered-block */
