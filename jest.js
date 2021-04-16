@@ -96,15 +96,15 @@ async function run() {
         cwd: workingDirectory || '.',
     });
 
-    if (stdout === null || stdout === '') {
-        console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
-        process.exit(1);
-        return;
-    }
+    // if (stdout === null || stdout === '') {
+    //     console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
+    //     process.exit(1);
+    //     return;
+    // }
 
     // TODO: stream output from jest
     core.group("Jest output");
-    core.info(stdout);
+    core.info(stderr); // jest outputs to stderr by default, TODO: link to GitHub ticket
     core.endGroup();
 
     console.log(`Parsing json output from jest...`);
