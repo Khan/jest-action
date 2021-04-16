@@ -65,8 +65,8 @@ async function run() {
     /* flow-uncovered-block */
     // Log which files are being tested by jest.
     const cwd = process.cwd();
-    core.startGroup('Running eslint on the following files:');
-    for (const file of files) {
+    core.startGroup('Running jest on the following files:');
+    for (const file of jsFiles) {
         core.info(path.relative(cwd, file));
     }
     core.endGroup();
