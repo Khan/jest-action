@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // @flow
 
 /**
@@ -20,6 +19,7 @@ const sendReport = require('actions-utils/send-report');
 const execProm = require('actions-utils/exec-prom');
 const gitChangedFiles = require('actions-utils/git-changed-files');
 const getBaseRef = require('actions-utils/get-base-ref');
+const core = require("@actions/core"); // flow-uncovered-line
 
 const parseWithVerboseError = (text, stderr) => {
     try {
@@ -61,6 +61,16 @@ async function run() {
         console.log('No JavaScript files changed');
         return;
     }
+
+    /* flow-uncovered-block */
+    // Log which files are being tested by jest.
+    const cwd = process.cwd();
+    core.startGroup('Running eslint on the following files:');
+    for (const file of files) {
+        core.info(path.relative(cwd, file));
+    }
+    core.endGroup();
+    /* end flow-uncovered-block */
 
     // Build the Jest command
     const jestCmd = [jestBin, '--json', '--testLocationInResults', '--passWithNoTests'];
@@ -107,6 +117,14 @@ async function run() {
         await sendReport('Jest', []);
         return;
     }
+
+    /* flow-uncovered-block */
+    // Log which files are being tested by jest.
+    core.startGroup('Output from jest:');
+    core.info(JSON.stringify(data, null, 2));
+    core.endGroup();
+    /* end flow-uncovered-block */
+
     const annotations = [];
     for (const testResult of data.testResults) {
         if (testResult.status !== 'failed') {
