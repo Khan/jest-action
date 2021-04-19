@@ -45,8 +45,6 @@ const runJest = (
         core.info(`running ${jestBin} with options ${jestOpts.join(', ')}`);
         const jest = spawn(jestBin, jestOpts, spawnOpts);
 
-        core.info('Running jest');
-
         jest.stdout.on('data', data => {
             core.info(data.toString());
         });
@@ -58,9 +56,8 @@ const runJest = (
         });
 
         jest.on('close', code => {
-            if (code) {
-                core.error(`jest exited with code ${code}`);
-            }
+            // Jest will exit with a non-zero exit code if any test fails.
+            // This is normal so we don't bother logging error code.
             resolve();
         });
     });
@@ -121,7 +118,9 @@ async function run() {
     }
 
     try {
-        await runJest(jestBin, jestOpts, {cwd: workingDirectory});
+        await core.group("Running jest", async () => {
+            await runJest(jestBin, jestOpts, {cwd: workingDirectory});
+        });
     } catch (err) {
         core.error('An error occurred trying to run jest');
         core.error(err);
@@ -174,8 +173,8 @@ async function run() {
                 });
             }
         }
+        // All test failures have no location data
         if (!hadLocation) {
-            console.log('no location,');
             annotations.push({
                 path,
                 start: {line: 1, column: 0},
