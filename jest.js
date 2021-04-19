@@ -35,9 +35,14 @@ const parseWithVerboseError = (text /*: string */) => {
     }
 };
 
-const runJest = (jestBin /*: string */, jestOpts /*: Array<string> */) /*: Promise<void> */ => {
+const runJest = (
+    jestBin /*: string */,
+    jestOpts /*: Array<string> */,
+    spawnOpts /*: any */,
+) /*: Promise<void> */ => {
     return new Promise((resolve, reject) => {
-        const jest = spawn(jestBin, jestOpts);
+        core.info(`running ${jestBin} with options ${jestOpts.join(', ')}`);
+        const jest = spawn(jestBin, jestOpts, spawnOpts);
 
         core.group('Jest output');
 
@@ -71,7 +76,7 @@ const runJest = (jestBin /*: string */, jestOpts /*: Array<string> */) /*: Promi
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
-    const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'];
+    const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'] || '.';
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
     if (!jestBin) {
@@ -89,7 +94,7 @@ async function run() {
         return;
     }
 
-    const files = await gitChangedFiles(baseRef, workingDirectory || '.');
+    const files = await gitChangedFiles(baseRef, workingDirectory);
     const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
     const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
     if (!jsFiles.length) {
@@ -123,8 +128,9 @@ async function run() {
     }
 
     try {
-        await runJest(jestBin, jestOpts);
+        await runJest(jestBin, jestOpts, {cwd: workingDirectory});
     } catch (err) {
+        core.error(`runJest threw an error`);
         core.error(err);
         process.exit(1);
     }
@@ -146,7 +152,9 @@ async function run() {
             status: string,
         }>,
         success: bool,
-    }*/ = parseWithVerboseError(output);
+    }*/ = parseWithVerboseError(
+        output,
+    );
     /* end flow-uncovered-block */
 
     if (data.success) {
