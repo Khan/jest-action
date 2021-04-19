@@ -144,7 +144,7 @@ async function run() {
     /* end flow-uncovered-block */
 
     // Remove the temporary file now that we're done parsing it.
-    tmp.removeCallback(); // flow-uncovered-line
+    tmpObj.removeCallback(); // flow-uncovered-line
 
     if (data.success) {
         await sendReport('Jest', []);
