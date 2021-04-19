@@ -40,38 +40,32 @@ const runJest = (
     jestOpts /*: Array<string> */,
     spawnOpts /*: any */,
 ) /*: Promise<void> */ => {
+    /* flow-uncovered-block */
     return new Promise((resolve, reject) => {
         core.info(`running ${jestBin} with options ${jestOpts.join(', ')}`);
         const jest = spawn(jestBin, jestOpts, spawnOpts);
 
-        core.group('Jest output');
+        core.group('Running jest');
 
         jest.stdout.on('data', data => {
             core.info(data.toString());
         });
 
         jest.stderr.on('data', data => {
-            core.error(data.toString());
+            // jest uses stderr for all its output unfortunately
+            // https://github.com/facebook/jest/issues/5064
+            core.info(data.toString());
         });
 
         jest.on('close', code => {
             if (code) {
                 core.error(`jest exited with code ${code}`);
-                core.endGroup();
-                reject();
             }
+            core.endGroup();
             resolve();
         });
-
-        jest.on('exit', code => {
-            if (code) {
-                core.error(`jest exited with code ${code}`);
-            }
-            core.error(`stdio are not yet closed`);
-            core.endGroup();
-            reject();
-        });
     });
+    /* end flow-uncovered-block */
 };
 
 async function run() {
@@ -80,7 +74,7 @@ async function run() {
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
     if (!jestBin) {
-        console.error(
+        core.info(
             `You need to have jest installed, and pass in the the jest binary via the variable 'jest-bin'.`,
         );
         process.exit(1);
@@ -89,7 +83,7 @@ async function run() {
 
     const baseRef = getBaseRef();
     if (!baseRef) {
-        console.error(`No base ref given`);
+        core.info(`No base ref given`); // flow-uncovered-line
         process.exit(1);
         return;
     }
@@ -98,7 +92,7 @@ async function run() {
     const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
     const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
     if (!jsFiles.length) {
-        console.log('No JavaScript files changed');
+        core.info('No JavaScript files changed'); // flow-uncovered-line
         return;
     }
 
@@ -130,12 +124,12 @@ async function run() {
     try {
         await runJest(jestBin, jestOpts, {cwd: workingDirectory});
     } catch (err) {
-        core.error(`runJest threw an error`);
+        core.error('An error occurred trying to run jest');
         core.error(err);
         process.exit(1);
     }
 
-    console.log(`Parsing json output from jest...`);
+    core.info('Parsing json output from jest');
 
     const output = fs.readFileSync(tmpObj.name, 'utf-8');
 
