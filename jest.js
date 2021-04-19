@@ -42,7 +42,7 @@ const runJest = (
 ) /*: Promise<void> */ => {
     /* flow-uncovered-block */
     return new Promise((resolve, reject) => {
-        core.info(`running ${jestBin} with options ${jestOpts.join(', ')}`);
+        core.info(`running ${jestBin} ${jestOpts.join(' ')}`);
         const jest = spawn(jestBin, jestOpts, spawnOpts);
 
         jest.stdout.on('data', data => {
@@ -91,16 +91,6 @@ async function run() {
         core.info('No JavaScript files changed'); // flow-uncovered-line
         return;
     }
-
-    /* flow-uncovered-block */
-    // Log which files are being tested by jest.
-    const cwd = process.cwd();
-    core.startGroup('Running jest on the following files:');
-    for (const file of jsFiles) {
-        core.info(path.relative(cwd, file));
-    }
-    core.endGroup();
-    /* end flow-uncovered-block */
 
     const tmpObj = tmp.fileSync();
 
