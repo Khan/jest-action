@@ -32,6 +32,8 @@
         "prettier-eslint-cli": "^5.0.0"
     },
     "dependencies": {
-        "jest": "^26.0.1"
+        "@actions/core": "^1.2.7",
+        "jest": "^26.0.1",
+        "tmp": "^0.2.1"
     }
 }
