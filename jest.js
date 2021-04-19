@@ -16,24 +16,57 @@ require('@babel/register'); // flow-uncovered-line
 
 const fs = require('fs');
 const path = require('path');
+const {spawn} = require('child_process');
 const sendReport = require('actions-utils/send-report');
-const execProm = require('actions-utils/exec-prom');
 const gitChangedFiles = require('actions-utils/git-changed-files');
 const getBaseRef = require('actions-utils/get-base-ref');
 const core = require('@actions/core'); // flow-uncovered-line
 const tmp = require('tmp'); // flow-uncovered-line
 
-const parseWithVerboseError = (text, stderr) => {
+const parseWithVerboseError = (text /*: string */) => {
     try {
         return JSON.parse(text); // flow-uncovered-line
         // flow-next-uncovered-line
     } catch (err) {
         console.error('>> ❌ Invalid Json! ❌ <<');
         console.error('Jest probably had an error, or something is misconfigured');
-        console.error(stderr);
         console.error(text);
         throw err; // flow-uncovered-line
     }
+};
+
+const runJest = (jestBin /*: string */, jestOpts /*: Array<string> */) /*: Promise<void> */ => {
+    return new Promise((resolve, reject) => {
+        const jest = spawn(jestBin, jestOpts);
+
+        core.group('Jest output');
+
+        jest.stdout.on('data', data => {
+            core.info(data.toString());
+        });
+
+        jest.stderr.on('data', data => {
+            core.error(data.toString());
+        });
+
+        jest.on('close', code => {
+            if (code) {
+                core.error(`jest exited with code ${code}`);
+                reject();
+            }
+            resolve();
+        });
+
+        jest.on('exit', code => {
+            if (code) {
+                core.error(`jest exited with code ${code}`);
+            }
+            core.error(`stdio are not yet closed`);
+            reject();
+        });
+
+        core.endGroup();
+    });
 };
 
 async function run() {
@@ -76,9 +109,7 @@ async function run() {
 
     const tmpObj = tmp.fileSync();
 
-    // Build the Jest command
-    const jestCmd = [
-        jestBin,
+    const jestOpts = [
         '--json',
         `--outputFile=${tmpObj.name}`,
         '--testLocationInResults',
@@ -88,28 +119,14 @@ async function run() {
     // If we only want related tests, then we explicitly specify that and
     // include all of the files that are to be run.
     if (findRelatedTests) {
-        jestCmd.push('--findRelatedTests', ...jsFiles);
+        jestOpts.push('--findRelatedTests', ...jsFiles);
     }
 
-    const {stdout, stderr} = await execProm(jestCmd.join(' '), {
-        rejectOnError: false,
-        cwd: workingDirectory || '.',
-    });
-
-    // if (stdout === null || stdout === '') {
-    //     console.error(`\nThere was an error running jest${stderr ? ':\n\n' + stderr : ''}`);
-    //     process.exit(1);
-    //     return;
-    // }
-
-    // TODO: stream output from jest
-    core.group("Jest output");
-    core.info(stderr); // jest outputs to stderr by default, TODO: link to GitHub ticket
-    core.endGroup();
+    await runJest(jestBin, jestOpts);
 
     console.log(`Parsing json output from jest...`);
 
-    const output = fs.readFileSync(tmpObj.name, "utf-8");
+    const output = fs.readFileSync(tmpObj.name, 'utf-8');
 
     /* flow-uncovered-block */
     const data /*:{
@@ -124,23 +141,13 @@ async function run() {
             status: string,
         }>,
         success: bool,
-    }*/ = parseWithVerboseError(
-        output,
-        stderr,
-    );
+    }*/ = parseWithVerboseError(output);
     /* end flow-uncovered-block */
 
     if (data.success) {
         await sendReport('Jest', []);
         return;
     }
-
-    /* flow-uncovered-block */
-    // Log which files are being tested by jest.
-    core.startGroup('Output from jest:');
-    core.info(JSON.stringify(data, null, 2));
-    core.endGroup();
-    /* end flow-uncovered-block */
 
     const annotations = [];
     for (const testResult of data.testResults) {
