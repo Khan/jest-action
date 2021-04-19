@@ -111,7 +111,7 @@ async function run() {
 
     /* flow-uncovered-block */
     try {
-        await core.group("Running jest", async () => {
+        await core.group('Running jest', async () => {
             await runJest(jestBin, jestOpts, {cwd: workingDirectory});
         });
     } catch (err) {
