@@ -38,7 +38,7 @@ const parseWithVerboseError = (text /*: string */) => {
 const runJest = (
     jestBin /*: string */,
     jestOpts /*: Array<string> */,
-    spawnOpts /*: any */,
+    spawnOpts /*: any */, // flow-uncovered-line
 ) /*: Promise<void> */ => {
     /* flow-uncovered-block */
     return new Promise((resolve, reject) => {
@@ -70,9 +70,11 @@ async function run() {
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
     if (!jestBin) {
+        /* flow-uncovered-block */
         core.info(
             `You need to have jest installed, and pass in the the jest binary via the variable 'jest-bin'.`,
         );
+        /* end flow-uncovered-block */
         process.exit(1);
         return;
     }
@@ -92,11 +94,11 @@ async function run() {
         return;
     }
 
-    const tmpObj = tmp.fileSync();
+    const tmpObj = tmp.fileSync(); // flow-uncovered-line
 
     const jestOpts = [
         '--json',
-        `--outputFile=${tmpObj.name}`,
+        `--outputFile=${tmpObj.name}`, // flow-uncovered-line
         '--testLocationInResults',
         '--passWithNoTests',
     ];
@@ -107,6 +109,7 @@ async function run() {
         jestOpts.push('--findRelatedTests', ...jsFiles);
     }
 
+    /* flow-uncovered-block */
     try {
         await core.group("Running jest", async () => {
             await runJest(jestBin, jestOpts, {cwd: workingDirectory});
@@ -116,10 +119,11 @@ async function run() {
         core.error(err);
         process.exit(1);
     }
+    /* end flow-uncovered-block */
 
-    core.info('Parsing json output from jest');
+    core.info('Parsing json output from jest'); // flow-uncovered-line
 
-    const output = fs.readFileSync(tmpObj.name, 'utf-8');
+    const output = fs.readFileSync(tmpObj.name, 'utf-8'); // flow-uncovered-line
 
     /* flow-uncovered-block */
     const data /*:{
