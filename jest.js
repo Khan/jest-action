@@ -45,7 +45,7 @@ const runJest = (
         core.info(`running ${jestBin} with options ${jestOpts.join(', ')}`);
         const jest = spawn(jestBin, jestOpts, spawnOpts);
 
-        core.group('Running jest');
+        core.info('Running jest');
 
         jest.stdout.on('data', data => {
             core.info(data.toString());
@@ -61,7 +61,6 @@ const runJest = (
             if (code) {
                 core.error(`jest exited with code ${code}`);
             }
-            core.endGroup();
             resolve();
         });
     });
