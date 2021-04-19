@@ -52,6 +52,7 @@ const runJest = (jestBin /*: string */, jestOpts /*: Array<string> */) /*: Promi
         jest.on('close', code => {
             if (code) {
                 core.error(`jest exited with code ${code}`);
+                core.endGroup();
                 reject();
             }
             resolve();
@@ -62,10 +63,9 @@ const runJest = (jestBin /*: string */, jestOpts /*: Array<string> */) /*: Promi
                 core.error(`jest exited with code ${code}`);
             }
             core.error(`stdio are not yet closed`);
+            core.endGroup();
             reject();
         });
-
-        core.endGroup();
     });
 };
 
@@ -122,7 +122,12 @@ async function run() {
         jestOpts.push('--findRelatedTests', ...jsFiles);
     }
 
-    await runJest(jestBin, jestOpts);
+    try {
+        await runJest(jestBin, jestOpts);
+    } catch (err) {
+        core.error(err);
+        process.exit(1);
+    }
 
     console.log(`Parsing json output from jest...`);
 
