@@ -64,12 +64,12 @@ const runJest = (
     /* end flow-uncovered-block */
 };
 
-const parseList = (text) => {
+const parseList = text => {
     if (!text || !text.length) {
-        return []
+        return [];
     }
-    return text.split(',')
-}
+    return text.split(',');
+};
 
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
