@@ -64,11 +64,19 @@ const runJest = (
     /* end flow-uncovered-block */
 };
 
+const parseList = (text) => {
+    if (!text || !text.length) {
+        return []
+    }
+    return text.split(',')
+}
+
 async function run() {
     const jestBin = process.env['INPUT_JEST-BIN'];
     const workingDirectory = process.env['INPUT_CUSTOM-WORKING-DIRECTORY'] || '.';
     const subtitle = process.env['INPUT_CHECK-RUN-SUBTITLE'];
     const findRelatedTests = process.env['INPUT_FIND-RELATED-TESTS'];
+    const runAllIfChanged = parseList(process.env['INPUT_RUN-ALL-IF-CHANGED']);
     if (!jestBin) {
         /* flow-uncovered-block */
         core.info(
@@ -87,9 +95,12 @@ async function run() {
     }
 
     const files = await gitChangedFiles(baseRef, workingDirectory);
+
+    const shouldRunAll = runAllIfChanged.some(name => files.some(file => file === name));
+
     const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
     const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
-    if (!jsFiles.length) {
+    if (!jsFiles.length && !shouldRunAll) {
         core.info('No JavaScript files changed'); // flow-uncovered-line
         return;
     }
@@ -105,7 +116,7 @@ async function run() {
 
     // If we only want related tests, then we explicitly specify that and
     // include all of the files that are to be run.
-    if (findRelatedTests) {
+    if (findRelatedTests && !shouldRunAll) {
         jestOpts.push('--findRelatedTests', ...jsFiles);
     }
 
