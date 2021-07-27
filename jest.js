@@ -64,7 +64,7 @@ const runJest = (
     /* end flow-uncovered-block */
 };
 
-const parseList = text => {
+const parseList = (text) /*: Array<string>*/ => {
     if (!text || !text.length) {
         return [];
     }
