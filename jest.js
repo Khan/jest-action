@@ -94,9 +94,11 @@ async function run() {
         return;
     }
 
+    const current = process.cwd();
     const files = await gitChangedFiles(baseRef, workingDirectory);
-
-    const shouldRunAll = runAllIfChanged.some(name => files.some(file => file === name));
+    const shouldRunAll = runAllIfChanged.some(name =>
+        files.some(file => path.relative(current, file) === name),
+    );
 
     const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
     const jsFiles = files.filter(file => validExt.includes(path.extname(file)));
