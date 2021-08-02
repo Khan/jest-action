@@ -16,6 +16,9 @@ inputs:
   find-related-tests:
     required: false
     description: 'Set to 1 to make it so that only related test files are run, not all tests.'
+  run-all-if-changed:
+    required: false
+    description: 'Comma-separated list of files which, if changed, trigger a re-check of all files, ignoring find-related-tests'
 branding:
   icon: check-circle
   color: red
