@@ -68,7 +68,12 @@ const parseList = (text) /*: Array<string>*/ => {
     if (!text || !text.length) {
         return [];
     }
-    return text.split(',');
+    return (
+        text
+            .split(',')
+            // Trim intervening whitespace
+            .map(item => item.trim())
+    );
 };
 
 async function run() {
@@ -96,8 +101,12 @@ async function run() {
 
     const current = path.resolve(workingDirectory);
     const files = await gitChangedFiles(baseRef, workingDirectory);
-    const shouldRunAll = runAllIfChanged.some(name =>
-        files.some(file => path.relative(current, file) === name),
+    const relativeFiles = files.map(absPath => path.relative(current, absPath));
+    const shouldRunAll = runAllIfChanged.some(needle =>
+        // If it ends with a `/`, it's a directory, and we flag all descendents.
+        needle.endsWith('/')
+            ? relativeFiles.some(file => file.startsWith(needle))
+            : relativeFiles.some(file => file === needle),
     );
 
     const validExt = ['.js', '.jsx', '.mjs', '.ts', '.tsx'];
