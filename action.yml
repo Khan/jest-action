@@ -18,7 +18,7 @@ inputs:
     description: 'Set to 1 to make it so that only related test files are run, not all tests.'
   run-all-if-changed:
     required: false
-    description: 'Comma-separated list of files which, if changed, trigger a re-check of all files, ignoring find-related-tests'
+    description: 'Comma-separated list of files which, if changed, trigger a re-check of all files, ignoring find-related-tests. Directories can be specified with a trailing /, in which case all descendents of that directory would trigger a full re-check.'
 branding:
   icon: check-circle
   color: red
