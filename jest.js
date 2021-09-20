@@ -101,7 +101,9 @@ async function run() {
 
     const current = path.resolve(workingDirectory);
     const files = await gitChangedFiles(baseRef, workingDirectory);
-    const relativeFiles = files.map(absPath => path.relative(current, absPath));
+    const relativeFiles /*: Array<string> */ = files.map(absPath =>
+        path.relative(current, absPath),
+    );
     const shouldRunAll = runAllIfChanged.some(needle =>
         // If it ends with a `/`, it's a directory, and we flag all descendents.
         needle.endsWith('/')
